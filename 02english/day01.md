@@ -1,0 +1,15 @@
+- 使用说明书    tutorial
+- 介绍 引言     introduction
+- 明确的        specific
+- 编译          compile
+- 函数          function
+- 变量          variable
+- 操作          operation
+- 执行          perform
+- 信息数据      information
+- 算数 计算     arithmetic
+- 表达式        expression
+- 注释          comment
+- 字符          character
+- 忽视          ignore
+- 可执行        executable
