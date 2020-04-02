@@ -52,4 +52,62 @@ typedef enum _Ret {
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
+
+
+
+
+#include <unistd.h>
+#include <errno.h>
+
+/*
+1. r O_RDONLY 
+2. r+ O_RDWR
+3. w O_WRONLY | O_TRUNC | O_CREAT
+4. W+  O_RDWR | O_TRUNC | O_CREAT
+*/
+
+ssize_t writen(int fd, const void* pBuf, size_t n)
+{
+    size_t nLeft = n;
+    const char* pData = (const char*)(pBuf);
+
+    while (nLeft > 0) {
+        size_t nwrite = write(fd, pData, nLeft);
+        if (nwrite <= 0) {
+            if (nwrite < 0 && errno == EINTR)
+                nwrite = 0;
+            else
+                return -1;
+        } else {
+            nLeft -= nwrite;
+            pData += nwrite;
+        }
+    }
+    return n;
+}
+
+ssize_t readn(int fd, void* pBuf, size_t bufSize) {
+    size_t nleft = bufSize;
+    char* pData = (char*)(pBuf);
+
+    while (nleft > 0) {
+        size_t nread = read(fd, pData, nleft);
+        if (nread < 0) {
+            if (errno == EINTR || errno == EAGAIN) {
+                nread = 0;
+            } else {
+                return -1;
+            }
+        } else if (nread == 0) {
+            break;
+        }
+
+        nleft -= nread;
+        pData += nread;
+    }
+
+    return bufSize - nleft;
+}
+
+
 #endif
