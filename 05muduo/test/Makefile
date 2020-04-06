@@ -6,7 +6,8 @@ all:
 	@#g++ -Wall -g -std=c++17 -I../ test_05_thread_bench.cpp ../*.cpp -o test_05_thread_bench.out -lpthread
 	@#g++ -Wall -g -std=c++17 -I../ test_06_mutex.cpp ../*.cpp -o test_06_mutex.out -lpthread
 	@#g++ -Wall -g -std=c++17 -I../ test_07_BlockQueue.cpp ../*.cpp -o test_07_BlockQueue.out -lpthread
-	g++ -Wall -g -std=c++17 -I../ test_08_BoundedBlockingQueue.cpp ../*.cpp -o test_08_BoundedBlockingQueue.out -lpthread
+	@#g++ -Wall -g -std=c++17 -I../ test_08_BoundedBlockingQueue.cpp ../*.cpp -o test_08_BoundedBlockingQueue.out -lpthread
+	g++ -Wall -g -std=c++17 -I../ test_09_ThreadPool.cpp ../*.cpp -o test_09_ThreadPool.out -lpthread
 	
 clean:
 	rm *.out
