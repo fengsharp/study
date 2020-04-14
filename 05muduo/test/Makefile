@@ -11,7 +11,8 @@ all:
 	@#g++ -Wall -g -std=c++17 -I../ test_10_singleton.cpp ../*.cpp -o test_10_singleton.out -lpthread
 	@#g++ -Wall -g -std=c++17 -I../ test_11_threadlocal.cpp ../*.cpp -o test_11_threadlocal.out -lpthread
 	@#g++ -Wall -g -std=c++17 -I../ test_12_singleton_threadlocal.cpp ../*.cpp -o test_12_singleton_threadlocal.out -lpthread
-	g++ -Wall -g -std=c++17 -I../ test_13_threadlocal_singleton.cpp ../*.cpp -o test_13_threadlocal_singleton.out -lpthread
+	@#g++ -Wall -g -std=c++17 -I../ test_13_threadlocal_singleton.cpp ../*.cpp -o test_13_threadlocal_singleton.out -lpthread
+	g++ -Wall -g -std=c++17 -I../ test_14_fileutil.cpp ../*.cpp -o test_14_fileutil.out -lpthread
 	
 clean:
 	rm *.out
