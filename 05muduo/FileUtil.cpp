@@ -10,6 +10,8 @@
 
 #include <string>
 
+#include "Logging.h"
+
 FileUtil::AppendFile::AppendFile(StringArg filename)
   : fp_(::fopen(filename.c_str(), "ae")),  // 'e' for O_CLOEXEC
     writtenBytes_(0)
@@ -24,7 +26,6 @@ FileUtil::AppendFile::~AppendFile()
   ::fclose(fp_);
 }
 
-__thread char t_errnobuf[512];
 void FileUtil::AppendFile::append(const char* logline, const size_t len)
 {
   size_t n = write(logline, len);
@@ -37,7 +38,7 @@ void FileUtil::AppendFile::append(const char* logline, const size_t len)
       int err = ferror(fp_);
       if (err)
       {
-        fprintf(stderr, "AppendFile::append() failed %s\n", strerror_r(err, t_errnobuf, sizeof t_errnobuf));
+        fprintf(stderr, "AppendFile::append() failed %s\n", strerror_tl(err));
       }
       break;
     }
