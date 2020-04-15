@@ -8,13 +8,10 @@
 #include <string.h>
 #include <string>
 
+#include "Types.h"
+
 const int kSmallBuffer = 4000;
 const int kLargeBuffer = 4000*1000;
-
-inline void memZero(void* p, size_t n)
-{
-  memset(p, 0, n);
-}
 
 template<int SIZE>
 class FixedBuffer : noncopyable
