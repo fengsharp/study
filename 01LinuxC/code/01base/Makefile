@@ -4,7 +4,8 @@ all:
 	@#gcc -Wall -g -std=c11 03test_strncpy.c -o 03test_strncpy.out
 	@#gcc -Wall -g -std=c11 04test_strcmp.c -o 04test_strcmp.out
 	@#gcc -Wall -g -std=c11 05test_sscanf.c -o 05test_sscanf.out
-	gcc -Wall -g -std=c11 06test_strtoken.c -o 06test_strtoken.out
+	@#gcc -Wall -g -std=c11 06test_strtoken.c -o 06test_strtoken.out
+	gcc -Wall -g -std=c11 07test_snprintf.c -o 07test_snprintf.out
 	
 clean:
 	rm *.out
