@@ -22,19 +22,19 @@ CookieCache::CookieCache()
 {
 }
 
-bool CookieCache::init(const std::string &localFilePath)
+void CookieCache::init(const std::string &localFilePath)
 {
     m_strFile = localFilePath;
-    return loadData();
+    loadData();
 }
 
 
-bool CookieCache::loadData()
+void CookieCache::loadData()
 {
-    FILE* file = fopen(m_strFile.c_str(), "w+");
-    if (file == NULL)
+    FILE* file = fopen(m_strFile.c_str(), "r");
+    if (file == NULL) // if file not exist, return
     {
-        return false;
+        return;
     }
 
     // domain \t key \t value \t expires \n
@@ -66,8 +66,6 @@ bool CookieCache::loadData()
 
     // try clear expires
     trySaveData();
-
-    return true;
 }
 
 bool CookieCache::saveData()
@@ -158,19 +156,19 @@ void CookieCache::addCookie(const std::string& domain, const std::string& cookie
                 {
                     findDomain->second[cookieKey] = CookieProperty(cookieValue, expires);
                     dataChanged = true;
-                }
+                } // else value not change, expires change, ignore
             }
             
         }
     }
 
-    if (!m_bSave)
+    if (!m_bSave && (expires > 0 && dataChanged))
     {
-        m_bSave = (expires > 0 && dataChanged);
+        m_bSave = true;
     }
 }
 
-void CookieCache::parseAndAddCookie(const std::string reqDomain, const std::string& strCookie)
+void CookieCache::parseAndAddCookie(const std::string& reqDomain, const std::string& strCookie)
 {
     // Set-Cookie: k=v;Domain=...;Expires=...
     static const std::string COOKIE_SET_MARK = "Set-Cookie:";
@@ -223,4 +221,66 @@ void CookieCache::parseAndAddCookie(const std::string reqDomain, const std::stri
         }
     }
     addCookie(domain, cookieKey, cookieValue, expires);
+}
+
+void CookieCache::setCurlRequestCookie(const std::string& reqDomain, CURL* curlHandle)
+{
+    std::map<std::string, std::map<std::string, CookieProperty>>::iterator findItem = m_mapLocalCookie.find(reqDomain);
+    if (findItem == m_mapLocalCookie.end())
+    {
+        return;
+    }
+
+    long long now = time(NULL);
+    std::map<std::string, CookieProperty>& mapCookies = findItem->second;
+    for (auto& cookieItem : mapCookies)
+    {
+        if (cookieItem.second.value.empty() || cookieItem.second.expires <= now)
+        {
+            continue;
+        }
+        else
+        {
+            std::string strCookie("Set-Cookie: ");
+            strCookie.append(cookieItem.first);
+            strCookie.append("=");
+            strCookie.append(cookieItem.second.value);
+            printf("### set cookie string:%s\n", strCookie.data());
+            curl_easy_setopt(curlHandle, CURLOPT_COOKIELIST, strCookie.c_str());
+        }
+    }
+}
+
+// http://192.168.154.128:8888/game
+// http://www.baidu.com
+// http://www.baidu.com/game
+// http://www.baidu.com:8888/game
+std::string CookieCache::parseDomain(const std::string& url)
+{
+    std::string ret;
+    if (url.empty())
+    {
+        return ret;
+    }
+
+    size_t startIndex = 0;
+    static const std::string URL_PRIFIX = "http://";
+    size_t prefixPos = url.find(URL_PRIFIX);
+    if (prefixPos != std::string::npos)
+    {
+        startIndex = prefixPos + URL_PRIFIX.length();
+    }
+    
+    const char* cursor = url.data() + startIndex;
+    while (*cursor != '\0' && *cursor != '/' && *cursor != ':')
+    {
+        ++cursor;
+    }
+    size_t stopIndex = cursor - url.data();
+
+    if (stopIndex > startIndex)
+    {
+        ret = url.substr(startIndex, (stopIndex-startIndex));
+    }
+    return ret;
 }

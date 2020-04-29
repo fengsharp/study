@@ -32,15 +32,19 @@ private:
     CookieCache(const CookieCache &);
 	CookieCache & operator = (const CookieCache &);
 public:
-    bool init(const std::string& localFilePath);
+    void init(const std::string& localFilePath);
     void trySaveData();
     // format: Set-Cookie: k=v;Domain=...;Expires=...
     // can not set anything but this(k=v; Domain; Expires), and (k=v) in the first position
     // can ignore Domain Expires, if set Domain or Expires, value not set null
     // can not include \r\n
-    void parseAndAddCookie(const std::string reqDomain, const std::string& strCookie);
+    void parseAndAddCookie(const std::string& reqDomain, const std::string& strCookie);
+    void setCurlRequestCookie(const std::string& reqDomain, CURL* curlHandle);
+
+    // Do not consider spaces. e.g. url="   "
+    static std::string parseDomain(const std::string& url);
 private:
-    bool loadData();
+    void loadData();
     bool saveData();
 
     // expires:utc timestamp(seconds). set 0, not save local
