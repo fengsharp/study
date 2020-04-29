@@ -37,7 +37,7 @@ int main()
     CookieCache::instance()->init(filePath);
 
     const std::string url = "http://192.168.154.128:8888/game";
-    domain = CookieCache::parseDomain(url);
+    domain = CookieCache::parseDomain(url.data());
     printf("domain: %s\n", domain.data());
 
     curl_global_init(CURL_GLOBAL_ALL);

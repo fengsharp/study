@@ -41,8 +41,8 @@ public:
     void parseAndAddCookie(const std::string& reqDomain, const std::string& strCookie);
     void setCurlRequestCookie(const std::string& reqDomain, CURL* curlHandle);
 
-    // Do not consider spaces. e.g. url="   "
-    static std::string parseDomain(const std::string& url);
+    // return strdup, so free by caller
+    static char* parseDomain(const char* url);
 private:
     void loadData();
     bool saveData();

@@ -255,32 +255,43 @@ void CookieCache::setCurlRequestCookie(const std::string& reqDomain, CURL* curlH
 // http://www.baidu.com
 // http://www.baidu.com/game
 // http://www.baidu.com:8888/game
-std::string CookieCache::parseDomain(const std::string& url)
+char* CookieCache::parseDomain(const char* url)
 {
-    std::string ret;
-    if (url.empty())
+    char* ret = nullptr;
+    if (!url)
     {
         return ret;
     }
 
-    size_t startIndex = 0;
-    static const std::string URL_PRIFIX = "http://";
-    size_t prefixPos = url.find(URL_PRIFIX);
-    if (prefixPos != std::string::npos)
+    static const char* URL_PRIFIX = "http://";
+    static const size_t URL_PRIFIX_LEN = strlen(URL_PRIFIX);
+
+    const char* start = url;
+    while (*start == ' ' && *start != '\0')
     {
-        startIndex = prefixPos + URL_PRIFIX.length();
+        ++start;
+    }
+
+    if (strlen(start) < URL_PRIFIX_LEN)
+    {
+        return ret;
+    }
+
+    if (memcmp(URL_PRIFIX, start, URL_PRIFIX_LEN) == 0)
+    {
+        start += URL_PRIFIX_LEN;
+    }
+
+    const char* stop = start;
+    while (*stop != '\0' && *stop != '/' && *stop != ':')
+    {
+        ++stop;
     }
     
-    const char* cursor = url.data() + startIndex;
-    while (*cursor != '\0' && *cursor != '/' && *cursor != ':')
+    if (stop > start)
     {
-        ++cursor;
+        ret = strndup(start, (stop - start));
     }
-    size_t stopIndex = cursor - url.data();
 
-    if (stopIndex > startIndex)
-    {
-        ret = url.substr(startIndex, (stopIndex-startIndex));
-    }
     return ret;
 }

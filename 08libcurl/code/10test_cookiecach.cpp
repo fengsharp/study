@@ -1,15 +1,13 @@
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #include "CookieCache.h"
 
 void testCookieCach()
 {
     const std::string filePath = "del.txt";
-    if (CookieCache::instance()->init(filePath) == false)
-    {
-        puts("cookie cache init fail.");
-    }
+    CookieCache::instance()->init(filePath);
 
     // CookieCache::instance()->addCookie("192.168.154.128", "token1", "value1", 0);
     // CookieCache::instance()->addCookie("192.168.154.129", "token2", "value2", 1588149312);
@@ -21,28 +19,39 @@ void testCookieCach()
 
 void testUrl2Domain()
 {
-    assert(CookieCache::instance()->parseDomain("") == "");
+    char* ret = CookieCache::parseDomain("");
+    assert(ret == nullptr);
+    free(ret);
 
+    const char* url1 = "http://192.168.154.128:8888/game";
+    ret = CookieCache::parseDomain(url1);
+    printf("%s\n", ret);
+    assert(strcmp(ret, "192.168.154.128") == 0);
+    free(ret);
 
-    std::string url1 = "http://192.168.154.128:8888/game";
-    printf("%s\n", CookieCache::instance()->parseDomain(url1).data());
-    assert(CookieCache::instance()->parseDomain(url1) == "192.168.154.128");
-
-    std::string url2 = " http://www.baidu.com";
-    printf("%s\n", CookieCache::instance()->parseDomain(url2).data());
-    assert(CookieCache::instance()->parseDomain(url2) == "www.baidu.com");
+    const char* url2 = " http://www.baidu.com";
+    ret = CookieCache::parseDomain(url2);
+    printf("%s\n", ret);
+    assert(strcmp(ret, "www.baidu.com") == 0);
+    free(ret);
     
-    std::string url3 = "http://www.baidu.com/game";
-    printf("%s\n", CookieCache::instance()->parseDomain(url3).data());
-    assert(CookieCache::instance()->parseDomain(url3) == "www.baidu.com");
+    const char* url3 = "http://www.baidu.com/game";
+    ret = CookieCache::parseDomain(url3);
+    printf("%s\n", ret);
+    assert(strcmp(ret, "www.baidu.com") == 0);
+    free(ret);
 
-    std::string url4 = "http://www.baidu.com:8888/game";
-    printf("%s\n", CookieCache::instance()->parseDomain(url4).data());
-    assert(CookieCache::instance()->parseDomain(url4) == "www.baidu.com");
+    const char* url4 = "http://www.baidu.com:8888/game";
+    ret = CookieCache::parseDomain(url4);
+    printf("%s\n", ret);
+    assert(strcmp(ret, "www.baidu.com") == 0);
+    free(ret);
 
-    std::string url5 = "www.baidu.com:8888/game";
-    printf("%s\n", CookieCache::instance()->parseDomain(url5).data());
-    assert(CookieCache::instance()->parseDomain(url5) == "www.baidu.com");
+    const char* url5 = "www.baidu.com:8888/game";
+    ret = CookieCache::parseDomain(url5);
+    printf("%s\n", ret);
+    assert(strcmp(ret, "www.baidu.com") == 0);
+    free(ret);
 }
 
 int main()

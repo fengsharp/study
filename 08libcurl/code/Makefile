@@ -6,8 +6,8 @@ all:
 	@#g++ -Wall -g -std=c++17 05multi_cookie.cpp -o 05multi_cookie.out -I/usr/local/curl -lcurl
 	@#g++ -Wall -g -std=c++17 06cookie_list.cpp -o 06cookie_list.out -I/usr/local/curl -lcurl
 	@#g++ -Wall -g -std=c++17 07multi_cookie_list.cpp -o 07multi_cookie_list.out -I/usr/local/curl -lcurl
-	g++ -Wall -g -std=c++11 CookieCache.cpp 09myselfcookie.cpp -o 09myselfcookie.out -I/usr/local/curl -lcurl
-	@#g++ -Wall -g -std=c++11 CookieCache.cpp 10test_cookiecach.cpp -o 10test_cookiecach.out -I/usr/local/curl -lcurl
+	@#g++ -Wall -g -std=c++11 CookieCache.cpp 09myselfcookie.cpp -o 09myselfcookie.out -I/usr/local/curl -lcurl
+	g++ -Wall -g -std=c++11 CookieCache.cpp 10test_cookiecach.cpp -o 10test_cookiecach.out -I/usr/local/curl -lcurl
 	@#gcc -Wall -g -std=c++11 11test_timestamp.cpp -o 11test_timestamp.out
 	
 clean:
