@@ -25,6 +25,4 @@ http.createServer(function (request, response) {
         let sendData = 'echo[' + data + ']\n';
         response.end(sendData);
     });
-
-
 }).listen(8888);
