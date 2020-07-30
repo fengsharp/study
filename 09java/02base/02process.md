@@ -14,6 +14,21 @@
         - double(8)
 - 字符 char(2) 2字节刚好是Unicode内存占用字节
 - 布尔 boolean 没有定义字节大小，jvm内部表示为4字节
+- 整形如何变为unsigned类型
+```java
+Byte 
+    static int toUnsignedInt(byte x)  
+    static long toUnsignedLong(byte x)  
+
+Short
+    static int toUnsignedInt(short x)  
+    static long toUnsignedLong(short x)  
+
+Integer
+    static long toUnsignedLong(int x)  
+
+
+```
 
 # 字符
 1. char 内存中表示一个Unicode字符
