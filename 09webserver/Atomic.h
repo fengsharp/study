@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 template <typename T>
-class AtomicIntegerT : public NoneCopyable
+class AtomicIntegerT : private NoneCopyable
 {
 public:
     AtomicIntegerT()
