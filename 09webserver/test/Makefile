@@ -5,7 +5,8 @@ all:
 	@#$(CLANG) ../CurrentThread.cpp ../Exception.cpp test03_Exception.cpp -o test03_Exception.out
 	@#$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp ../Exception.cpp test04_Thread.cpp -o test04_Thread.out -lpthread
 	@#$(CLANG) ../Timestamp.cpp ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp ../Exception.cpp test05_Thread_bench.cpp -o test05_Thread_bench.out -lpthread
-	$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp test06_Singleton.cpp -o test06_Singleton.out  -lpthread
+	@#$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp test06_Singleton.cpp -o test06_Singleton.out  -lpthread
+	$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp test07_ThreadLocal.cpp -o test07_ThreadLocal.out  -lpthread
 
 
 clean:
