@@ -11,7 +11,8 @@ all:
 	@#$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp test09_ThreadLocalSingleton.cpp -o test09_ThreadLocalSingleton.out  -lpthread
 	@#$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp test10_BlockQueue.cpp -o test10_BlockQueue.out  -lpthread
 	@#$(CLANG) ../Timestamp.cpp ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp test11_BlockQueue_bench.cpp -o test11_BlockQueue_bench.out  -lpthread
-	$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp test12_BoundedBlockingQueue.cpp -o test12_BoundedBlockingQueue.out  -lpthread
+	@#$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp test12_BoundedBlockingQueue.cpp -o test12_BoundedBlockingQueue.out  -lpthread
+	$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp ../ThreadPool.cpp test13_ThreadPool.cpp -o test13_ThreadPool.out  -lpthread
 
 
 clean:
