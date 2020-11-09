@@ -13,7 +13,9 @@ all:
 	@#$(CLANG) ../Timestamp.cpp ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp test11_BlockQueue_bench.cpp -o test11_BlockQueue_bench.out  -lpthread
 	@#$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp test12_BoundedBlockingQueue.cpp -o test12_BoundedBlockingQueue.out  -lpthread
 	@#$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp ../ThreadPool.cpp test13_ThreadPool.cpp -o test13_ThreadPool.out  -lpthread
-	$(CLANG) ../Date.cpp ../TimeZone.cpp test14_TimeZone.cpp -o test14_TimeZone.out
+	@#$(CLANG) ../Date.cpp ../TimeZone.cpp test14_TimeZone.cpp -o test14_TimeZone.out
+	@#$(CLANG) ../FileUtil.cpp test15_FileUtil.cpp -o test15_FileUtil.out
+	$(CLANG) ../CurrentThread.cpp ../Timestamp.cpp ../FileUtil.cpp ../ProcessInfo.cpp test16_ProcessInfo.cpp -o test16_ProcessInfo.out -lpthread
 
 clean:
 	rm -fr *.out
