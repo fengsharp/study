@@ -15,7 +15,8 @@ all:
 	@#$(CLANG) ../Condition.cpp ../CountDownLatch.cpp ../Thread.cpp ../CurrentThread.cpp ../ThreadPool.cpp test13_ThreadPool.cpp -o test13_ThreadPool.out  -lpthread
 	@#$(CLANG) ../Date.cpp ../TimeZone.cpp test14_TimeZone.cpp -o test14_TimeZone.out
 	@#$(CLANG) ../FileUtil.cpp test15_FileUtil.cpp -o test15_FileUtil.out
-	$(CLANG) ../CurrentThread.cpp ../Timestamp.cpp ../FileUtil.cpp ../ProcessInfo.cpp test16_ProcessInfo.cpp -o test16_ProcessInfo.out -lpthread
+	@#$(CLANG) ../CurrentThread.cpp ../Timestamp.cpp ../FileUtil.cpp ../ProcessInfo.cpp test16_ProcessInfo.cpp -o test16_ProcessInfo.out -lpthread
+	$(CLANG) test17_GzipFile.cpp -o test17_GzipFile.out -lz
 
 clean:
 	rm -fr *.out
