@@ -32,7 +32,7 @@ inline const char* tidString()
     return t_tidString;
 }
 
-inline int tidStringLenght()
+inline int tidStringLength()
 {
     return t_tidStringLength;
 }

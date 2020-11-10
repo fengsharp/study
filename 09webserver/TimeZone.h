@@ -12,8 +12,9 @@ public:
     TimeZone(int eastOfUtc, const char * tzname);
     TimeZone() = default;
 
-    bool validate() const
+    bool valid() const
     {
+        // 'explicit operator bool() const' in C++11
         return static_cast<bool>(m_data);
     }
 
