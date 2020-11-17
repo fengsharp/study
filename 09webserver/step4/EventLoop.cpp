@@ -1,5 +1,11 @@
 #include "EventLoop.h"
 
+#include <signal.h>
+#include <sys/eventfd.h>
+#include <unistd.h>
+
+#include <algorithm>
+
 #include "Channel.h"
 #include "Logging.h"
 #include "Poller.h"
@@ -7,6 +13,17 @@
 
 __thread EventLoop * s_t_loopInThread = 0;
 const int kPollTimeMs = 10000;
+
+int createEventfd()
+{
+    int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+    if (evtfd < 0)
+    {
+        LOG_SYSERR << "failed in eventfd";
+        abort();
+    }
+    return evtfd;
+}
 
 EventLoop * EventLoop::getEventLoopOfCurrentThread()
 {
@@ -17,9 +34,12 @@ EventLoop::EventLoop()
     : m_bLooping(false)
     , m_bQuit(false)
     , m_bEventHanding(false)
+    , m_bCallingPendingFunctors(false)
     , m_threadId(CurrentThread::gettid())
     , m_pPoller(new Poller(this))
     , m_pTimerQueue(new TimerQueue(this))
+    , m_wakeupfd(createEventfd())
+    , m_pWakeupChannel(new Channel(this, m_wakeupfd))
     , m_pCurrentActiveChannel(nullptr)
 {
     LOG_TRACE << "eventloop create. address:" << this << ". thread id:" << m_threadId;
@@ -31,17 +51,23 @@ EventLoop::EventLoop()
     {
         s_t_loopInThread = this;
     }
+
+    m_pWakeupChannel->setReadCallback(std::bind(&EventLoop::handleRead, this, _1));
+    m_pWakeupChannel->enableReading();
 }
 
 EventLoop::~EventLoop()
 {
+    m_pWakeupChannel->disableAll();
+    m_pWakeupChannel->remove();
+    ::close(m_wakeupfd);
+
     s_t_loopInThread = nullptr;
 }
 
 void EventLoop::loop()
 {
     assert(m_bLooping == false);
-
     assertInLoopThread();
     m_bLooping = true;
     m_bQuit = false;
@@ -64,6 +90,8 @@ void EventLoop::loop()
         }
         m_pCurrentActiveChannel = nullptr;
         m_bEventHanding = false;
+
+        doPendingFunctors();
     }
 
     LOG_TRACE << "EventLoop " << this << " end loop";
@@ -102,8 +130,39 @@ void EventLoop::quit()
     m_bQuit = true;
     if (!isInLoopThread())
     {
-        // wake up
+        wakeup();
     }
+}
+
+void EventLoop::runInLoop(Functors cb)
+{
+    if (isInLoopThread())
+    {
+        cb();
+    }
+    else
+    {
+        queueInLoop(std::move(cb));
+    }
+}
+
+void EventLoop::queueInLoop(Functors cb)
+{
+    {
+        MutexLockGuard lock(m_mutex);
+        m_vecPendingFunctors.push_back(cb);
+    }
+
+    if (!isInLoopThread() || m_bCallingPendingFunctors)
+    {
+        wakeup();
+    }
+}
+
+size_t EventLoop::queueSize() const
+{
+    MutexLockGuard lock(m_mutex);
+    return m_vecPendingFunctors.size();
 }
 
 bool EventLoop::hasChannel(Channel * pChannel)
@@ -151,4 +210,42 @@ TimerId EventLoop::runEvery(double interval, const TimerCallback & cb)
 void EventLoop::cancel(TimerId timerId)
 {
     return m_pTimerQueue->cancel(timerId);
+}
+
+void EventLoop::wakeup()
+{
+    uint64_t one = 1;
+    ssize_t n = ::write(m_wakeupfd, &one, sizeof(one));
+    if (n != sizeof(one))
+    {
+        LOG_ERROR << "EventLoop::wakeup() writes" << n << " bytes instead of 8";
+    }
+}
+
+void EventLoop::handleRead(Timestamp receiveTime)
+{
+    uint64_t one = 1;
+    ssize_t n = ::read(m_wakeupfd, &one, sizeof(one));
+    if (n != sizeof(one))
+    {
+        LOG_ERROR << "EventLoop::handleRead() read" << n << " bytes instead of 8";
+    }
+}
+
+void EventLoop::doPendingFunctors()
+{
+    std::vector<Functors> vecFunctors;
+    m_bCallingPendingFunctors = true;
+
+    {
+        MutexLockGuard lock(m_mutex);
+        vecFunctors.swap(m_vecPendingFunctors);
+    }
+
+    for (const Functors& item : vecFunctors)
+    {
+        item();
+    }
+    
+    m_bCallingPendingFunctors = false;
 }
