@@ -4,6 +4,7 @@
 #include <any>
 #include <memory>
 
+#include "Buffer.h"
 #include "Callbacks.h"
 #include "InetAddress.h"
 #include "NoneCopyable.h"
@@ -22,22 +23,22 @@ public:
     TcpConnection(EventLoop * pLoop, const string & name, int sockfd, const InetAddress & localAddr, const InetAddress & peerAddr);
     ~TcpConnection();
 
-    EventLoop* getLoop() const
+    EventLoop * getLoop() const
     {
         return m_pLoop;
     }
 
-    const string& name() const
+    const string & name() const
     {
         return m_strName;
     }
 
-    const InetAddress& getLocalAddress() const
+    const InetAddress & getLocalAddress() const
     {
         return m_localAddr;
     }
 
-    const InetAddress& getPeerAddress() const
+    const InetAddress & getPeerAddress() const
     {
         return m_peerAddr;
     }
@@ -52,17 +53,35 @@ public:
         return m_state == kDisconnected;
     }
 
-    void setConnectionCallback(const ConnectionCallback& cb)
+    // void send(string&& message); // C++11
+    void send(const void * message, int len);
+    void send(const StringPiece & message);
+    // void send(Buffer&& message); // C++11
+    void send(Buffer * message); // this one will swap data
+    void shutdown(); // NOT thread safe, no simultaneous calling
+    void setTcpNoDelay(bool on);
+
+    Buffer * inputBuffer()
+    {
+        return &m_inputBuffer;
+    }
+
+    Buffer * outputBuffer()
+    {
+        return &m_outputBuffer;
+    }
+
+    void setConnectionCallback(const ConnectionCallback & cb)
     {
         m_connectionCallback = cb;
     }
 
-    void setMessageCallback(const MessageCallback& cb)
+    void setMessageCallback(const MessageCallback & cb)
     {
         m_messageCallback = cb;
     }
 
-    void setCloseCallback(const CloseCallback& cb)
+    void setCloseCallback(const CloseCallback & cb)
     {
         m_closeCallback = cb;
     }
@@ -81,6 +100,10 @@ private:
     void handleRead(Timestamp receiveTime);
     void handleClose();
     void handleError();
+    void sendInLoop(const StringPiece & message);
+    void sendInLoop(const void * message, size_t len);
+    void shutdownInLoop();
+
     void setState(StateE s)
     {
         m_state = s;
@@ -97,6 +120,8 @@ private:
     ConnectionCallback m_connectionCallback;
     MessageCallback m_messageCallback;
     CloseCallback m_closeCallback;
+    Buffer m_inputBuffer;
+    Buffer m_outputBuffer;
 };
 
 #endif

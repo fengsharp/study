@@ -27,6 +27,7 @@ private:
     const char * m_szString;
 };
 
+// string_view 是C++17所提供的用于处理只读字符串的轻量对象
 typedef std::string_view StringPiece;
 
 #endif

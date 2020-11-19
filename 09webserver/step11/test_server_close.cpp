@@ -3,23 +3,25 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "Buffer.h"
 #include "EventLoop.h"
 #include "InetAddress.h"
 #include "TcpServer.h"
+#include "Types.h"
 
 class TestServer
 {
 public:
-    TestServer(EventLoop * loop, const InetAddress & listenAddr, int numThreads)
+    TestServer(EventLoop * loop, const InetAddress & listenAddr)
         : m_pLoop(loop)
         , m_server(m_pLoop, listenAddr, "TestServer")
-        , m_numThreads(numThreads)
+        , m_strMsg1(100, 'A')
+        , m_strMsg2(200, 'B')
     {
         m_server.setConnectionCallback(
             std::bind(&TestServer::onConnection, this, _1));
         m_server.setMessageCallback(
             std::bind(&TestServer::onMessage, this, _1, _2, _3));
-        m_server.setThreadNum(m_numThreads);
     }
 
     void start()
@@ -35,6 +37,9 @@ private:
             printf("onConnection(): new connection [%s] from %s\n",
                    conn->name().c_str(),
                    conn->getPeerAddress().toIpPort().c_str());
+            conn->send(m_strMsg1);
+            conn->send(m_strMsg2);
+            conn->shutdown();
         }
         else
         {
@@ -44,16 +49,18 @@ private:
     }
 
     void onMessage(const TcpConnectionPtr & conn,
-                   const char * data,
-                   ssize_t len)
+                   Buffer * buf,
+                   Timestamp receiveTime)
     {
         printf("onMessage(): received %zd bytes from connection [%s]. data:%s\n",
-               len, conn->name().c_str(), data);
+               buf->readableBytes(), conn->name().c_str(), buf->retrieveAllAsString().data());
     }
 
     EventLoop * m_pLoop;
     TcpServer m_server;
-    int m_numThreads;
+
+    string m_strMsg1;
+    string m_strMsg2;
 };
 
 int main()
@@ -63,7 +70,7 @@ int main()
     InetAddress listenAddr(8888);
     EventLoop loop;
 
-    TestServer server(&loop, listenAddr, 4);
+    TestServer server(&loop, listenAddr);
     server.start();
 
     loop.loop();
