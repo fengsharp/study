@@ -5,7 +5,7 @@ all:
 	../LogStream.cpp ../ProcessInfo.cpp ../LogFile.cpp ../FileUtil.cpp ../Logging.cpp \
 	Channel.cpp Poller.cpp EventLoop.cpp Timer.cpp TimerQueue.cpp EventLoopThread.cpp \
 	InetAddress.cpp SocketsOpts.cpp Socket.cpp Acceptor.cpp \
-	TcpConnection.cpp TcpServer.cpp \
+	TcpConnection.cpp TcpServer.cpp EventLoopThreadPool.cpp \
 	test_server_close.cpp -o test_server_close.out \
 	-lpthread
 
