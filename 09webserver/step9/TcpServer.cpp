@@ -21,6 +21,13 @@ TcpServer::~TcpServer()
 {
     m_pLoop->assertInLoopThread();
     LOG_TRACE << "TcpServer::~TcpServer [" << m_strName << "] destructing";
+
+    for (auto& item : m_mapConnection)
+    {
+        TcpConnectionPtr conn(item.second);
+        item.second.reset();
+        conn->getLoop()->runInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
+    }
 }
 
 void TcpServer::start()
@@ -55,6 +62,25 @@ void TcpServer::newConnection(int sockfd, const InetAddress & peerAddr)
     m_mapConnection[connName] = conn;
     conn->setConnectionCallback(m_connectionCallback);
     conn->setMessageCallback(m_messageCallback);
-
+    conn->setCloseCallback(std::bind(&TcpServer::removeConnection, this, _1));
     conn->connectEstablished();
 }
+
+void TcpServer::removeConnection(const TcpConnectionPtr& conn)
+{
+    m_pLoop->runInLoop(std::bind(&TcpServer::removeConnectionInLoop, this, conn));
+}
+
+void TcpServer::removeConnectionInLoop(const TcpConnectionPtr& conn)
+{
+    m_pLoop->assertInLoopThread();
+    LOG_INFO << "TcpServer::removeConnectionInLoop [" << m_strName
+           << "] - connection " << conn->name();
+    
+    size_t n = m_mapConnection.erase(conn->name());
+    (void)n;
+    assert(n == 1);
+    EventLoop* ioLoop = conn->getLoop();
+    ioLoop->queueInLoop(std::bind(&TcpConnection::connectDestroyed, conn));
+}
+

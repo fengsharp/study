@@ -6,10 +6,8 @@ all:
 	Channel.cpp Poller.cpp EventLoop.cpp Timer.cpp TimerQueue.cpp EventLoopThread.cpp \
 	InetAddress.cpp SocketsOpts.cpp Socket.cpp Acceptor.cpp \
 	TcpConnection.cpp TcpServer.cpp \
-	test_server_2.cpp -o test_server_2.out \
+	test_server_close.cpp -o test_server_close.out \
 	-lpthread
-
-# test_server_1.cpp -o test_server_1.out \
 
 clean:
 	rm -fr *.out

@@ -62,7 +62,13 @@ public:
         m_messageCallback = cb;
     }
 
+    void setCloseCallback(const CloseCallback& cb)
+    {
+        m_closeCallback = cb;
+    }
+
     void connectEstablished();
+    void connectDestroyed();
 
 private:
     enum StateE
@@ -73,6 +79,8 @@ private:
         kDisconnecting
     };
     void handleRead(Timestamp receiveTime);
+    void handleClose();
+    void handleError();
     void setState(StateE s)
     {
         m_state = s;
@@ -88,6 +96,7 @@ private:
     const InetAddress m_peerAddr;
     ConnectionCallback m_connectionCallback;
     MessageCallback m_messageCallback;
+    CloseCallback m_closeCallback;
 };
 
 #endif
