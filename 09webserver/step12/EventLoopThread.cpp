@@ -26,7 +26,7 @@ EventLoop * EventLoopThread::startLoop()
     assert(!m_thread.started());
     m_thread.start();
 
-    EventLoop* pLoop = nullptr;
+    EventLoop * pLoop = nullptr;
     {
         MutexLockGuard lock(m_mutex);
         while (m_pLoop == nullptr)

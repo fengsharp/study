@@ -3,6 +3,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <string>
+
 #include "Buffer.h"
 #include "EventLoop.h"
 #include "InetAddress.h"
@@ -15,13 +18,10 @@ public:
     TestServer(EventLoop * loop, const InetAddress & listenAddr)
         : m_pLoop(loop)
         , m_server(m_pLoop, listenAddr, "TestServer")
-        , m_strMsg1(100, 'A')
-        , m_strMsg2(200, 'B')
     {
-        m_server.setConnectionCallback(
-            std::bind(&TestServer::onConnection, this, _1));
-        m_server.setMessageCallback(
-            std::bind(&TestServer::onMessage, this, _1, _2, _3));
+        m_server.setConnectionCallback(std::bind(&TestServer::onConnection, this, _1));
+        m_server.setMessageCallback(std::bind(&TestServer::onMessage, this, _1, _2, _3));
+        m_server.setWriteCompleteCallback(std::bind(&TestServer::onWriteComplete, this, _1));
     }
 
     void start()
@@ -37,9 +37,6 @@ private:
             printf("onConnection(): new connection [%s] from %s\n",
                    conn->name().c_str(),
                    conn->getPeerAddress().toIpPort().c_str());
-            conn->send(m_strMsg1);
-            conn->send(m_strMsg2);
-            conn->shutdown();
         }
         else
         {
@@ -52,15 +49,21 @@ private:
                    Buffer * buf,
                    Timestamp receiveTime)
     {
-        printf("onMessage(): received %zd bytes from connection [%s]. data:%s\n",
-               buf->readableBytes(), conn->name().c_str(), buf->retrieveAllAsString().data());
+        // printf("onMessage(): received %zd bytes from connection [%s]. data:%s\n",
+        //        buf->readableBytes(), conn->name().c_str(), buf->retrieveAllAsString().data());
+        string strData = buf->retrieveAllAsString();
+        std::transform(strData.begin(), strData.end(), strData.begin(), ::toupper);
+        
+        conn->send(strData.data(), strData.size());
+    }
+
+    void onWriteComplete(const TcpConnectionPtr & conn)
+    {
+        printf("output over.\n");
     }
 
     EventLoop * m_pLoop;
     TcpServer m_server;
-
-    string m_strMsg1;
-    string m_strMsg2;
 };
 
 int main()

@@ -52,6 +52,11 @@ public:
         m_messageCallback = cb;
     }
 
+    void setWriteCompleteCallback(const WriteCompleteCallback & cb)
+    {
+        m_writeCompleteCallback = cb;
+    }
+
 private:
     void newConnection(int sockfd, const InetAddress & peerAddr);
     void removeConnection(const TcpConnectionPtr & conn);
@@ -65,6 +70,7 @@ private:
     std::shared_ptr<EventLoopThreadPool> m_pThreadPool;
     ConnectionCallback m_connectionCallback;
     MessageCallback m_messageCallback;
+    WriteCompleteCallback m_writeCompleteCallback;
     ThreadInitCallback m_threadInitCallback;
     AtomicInt32 m_bStarted;
     int m_nextConnId;
