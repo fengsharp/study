@@ -13,7 +13,9 @@ protected:
 
 public:
     NoneCopyable(const NoneCopyable &) = delete;
+    NoneCopyable(const NoneCopyable &&) = delete;
     NoneCopyable & operator=(const NoneCopyable &) = delete;
+    NoneCopyable & operator=(const NoneCopyable &&) = delete;
 };
 
 #endif
