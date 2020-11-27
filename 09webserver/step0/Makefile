@@ -8,7 +8,8 @@ all:
 	@#$(CLANG++) ../CurrentThread.cpp 04test_factory2.cpp -o 04test_factory2.out
 	@#$(CLANG++) ../CurrentThread.cpp 05test_factory3.cpp -o 05test_factory3.out
 	@#$(CLANG++) ../CurrentThread.cpp 06test_factory4.cpp -o 06test_factory4.out
-	$(CLANG++) ../CurrentThread.cpp 07test_facotry5.cpp -o 07test_facotry5.out
+	@#$(CLANG++) ../CurrentThread.cpp 07test_facotry5.cpp -o 07test_facotry5.out
+	$(CLANG++) ../CurrentThread.cpp 08test_non_recursive_mutex.cpp -o 08test_non_recursive_mutex.out -lpthread
 
 
 	@#$(CLANG) ../CurrentThread.cpp ../Thread.cpp ../CountDownLatch.cpp 01test_thread_factory1.cpp -o 01test_thread_factory1.out -lpthread
