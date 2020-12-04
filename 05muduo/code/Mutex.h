@@ -103,15 +103,15 @@ public:
         pthread_mutex_destroy(&m_mutex);
     }
 
-    void lock()
+    void lock() ACQUIRE()
     {
         pthread_mutex_lock(&m_mutex);
-        m_holderTid = CurrentThread::gettid();
+        assignHolder();
     }
 
-    void unlock()
+    void unlock() RELEASE()
     {
-        m_holderTid = 0;
+        unassignHolder();
         pthread_mutex_unlock(&m_mutex);
     }
 
@@ -120,7 +120,7 @@ public:
         return m_holderTid == CurrentThread::gettid();
     }
 
-    void assertLocked()
+    void assertLocked() ASSERT_CAPABILITY(this)
     {
         assert(isLockedByThisThread() == true);
     }
@@ -129,6 +129,37 @@ public:
     {
         return &m_mutex;
     }
+
+private:
+    void assignHolder()
+    {
+        m_holderTid = CurrentThread::gettid();
+    }
+
+    void unassignHolder()
+    {
+        m_holderTid = 0;
+    }
+
+private:
+    friend class Condition;
+    class UnasignGuard : private NonCopyable
+    {
+    public:
+        explicit UnasignGuard(MutexLock & owner)
+            : m_owner(owner)
+        {
+            m_owner.unassignHolder();
+        }
+
+        ~UnasignGuard()
+        {
+            m_owner.assignHolder();
+        }
+
+    private:
+        MutexLock & m_owner;
+    };
 
 private:
     pthread_mutex_t m_mutex;
