@@ -8,7 +8,7 @@ all:
 	@#$(CLANG++) Timestamp.cpp CurrentThread.cpp Thread.cpp 04test_mutext.cpp -o 04test_mutext.out -lpthread
 	@#$(CLANG++) Timestamp.cpp CurrentThread.cpp Thread.cpp 05test_atomic.cpp -o 05test_atomic.out -lpthread
 	@#$(CLANG++) Timestamp.cpp CurrentThread.cpp Thread.cpp 06test_latch1.cpp -o 06test_latch1.out -lpthread
-	$(CLANG++) Timestamp.cpp CurrentThread.cpp Thread.cpp 07test_latch2.cpp -o 07test_latch2.out -lpthread
-	
+	@#$(CLANG++) Timestamp.cpp CurrentThread.cpp Thread.cpp 07test_latch2.cpp -o 07test_latch2.out -lpthread
+	$(CLANG++) 08test_move.cpp -o 08test_move.out
 clean:
 	rm -fr *.o *.out
