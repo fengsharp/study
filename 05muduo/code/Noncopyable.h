@@ -1,5 +1,5 @@
-#ifndef COPYABLE_H_
-#define COPYABLE_H_
+#ifndef NONCOPYABLE_H_
+#define NONCOPYABLE_H_
 
 /// 子类不可拷贝赋值
 class NonCopyable

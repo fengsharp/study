@@ -21,7 +21,7 @@ inline void memZero(void * p, size_t n)
 }
 
 /// 隐式转换，如子类多路继承时，转为父类，替换掉static_cast
-template <typename From, typename To>
+template <typename To, typename From>
 inline To implicit_cast(const From & f)
 {
     return f;

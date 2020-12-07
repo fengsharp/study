@@ -29,7 +29,7 @@ size_t convert(char buf[], T value)
         ++p;
     } while (i != 0);
 
-    if (vlaue < 0)
+    if (value < 0)
     {
         *p = '-';
         ++p;

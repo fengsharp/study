@@ -79,7 +79,7 @@ public:
     }
 
 private:
-    const char * end()
+    const char * end() const
     {
         return m_data + sizeof(m_data);
     }

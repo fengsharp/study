@@ -50,6 +50,7 @@ public:
 inline LogStream & operator<<(LogStream & s, T v)
 {
     s.append(v.m_str, v.m_len);
+    return s;
 }
 
 inline LogStream & operator<<(LogStream & s, const SourceFile & v)
