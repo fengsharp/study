@@ -26,12 +26,12 @@ Logger::LogLevel initLogLevel()
 Logger::LogLevel g_logLevel = initLogLevel();
 
 const char * LogLevelName[Logger::NUM_LOG_LEVELS] = {
-    "trace",
-    "debug",
-    "info",
-    "warn",
-    "error",
-    "fatal"
+    "trace ",
+    "debug ",
+    "info  ",
+    "warn  ",
+    "error ",
+    "fatal "
 };
 
 class T
@@ -103,13 +103,13 @@ void Logger::Impl::formatTime()
         int len = snprintf(t_time, sizeof(t_time), "%4d-%02d-%02dT%02d:%02d:%02d",
                            tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
                            tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec);
-        assert(len == 17);
+        assert(len == 19);
         (void)len;
     }
 
     Fmt us(".%06dZ ", microseconds);
     assert(us.length() == 9);
-    m_stream << T(t_time, 17) << T(us.data(), 9);
+    m_stream << T(t_time, 19) << T(us.data(), 9);
 }
 
 void Logger::Impl::finish()
