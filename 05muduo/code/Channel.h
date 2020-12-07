@@ -9,13 +9,14 @@
 class Channel : private NonCopyable
 {
 public:
-    typedef std::function<void()> EventCallback;
+    typedef std::function<void(Timestamp)> ReadEventCallback;
+    typedef std::function<void(void)> EventCallback;
 
     Channel(EventLoop * pLoop, int fd);
 
-    void handleEvent();
+    void handleEvent(Timestamp receiveTime);
 
-    void setReadCallback(const EventCallback & cb)
+    void setReadCallback(const ReadEventCallback & cb)
     {
         m_readCallback = cb;
     }
@@ -90,6 +91,7 @@ public:
     }
 
     void remove();
+
 private:
     void update();
 
@@ -101,8 +103,9 @@ private:
     int m_receiveEvents;
     PollerState m_pollerState;
 
-    EventCallback m_readCallback;
+    ReadEventCallback m_readCallback;
     EventCallback m_writeCallback;
+    EventCallback m_closeCallback;
     EventCallback m_errorCallback;
 
     static const int kNoneEvent;

@@ -29,7 +29,7 @@ void Channel::update()
 // EPOLLIN EPOLLRDHUP EPOLLPRI      EPOLLHUP EPOLLET EPOLLONESHOT
 // EPOLLOUT
 // EPOLLERR
-void Channel::handleEvent()
+void Channel::handleEvent(Timestamp receiveTime)
 {
     if (m_receiveEvents & EPOLLERR)
     {
@@ -43,7 +43,7 @@ void Channel::handleEvent()
     {
         if (m_readCallback)
         {
-            m_readCallback();
+            m_readCallback(receiveTime);
         }
     }
 
@@ -61,5 +61,5 @@ void Channel::remove()
     assert(isNoneEvent());
 
     // m_bAddedToLoop = false;
-    // m_pLoop->removeChannel(this);
+    m_pLoop->removeChannel(this);
 }

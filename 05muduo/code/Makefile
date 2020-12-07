@@ -14,6 +14,7 @@ all:
 	
 	@#$(CLANG++) Timestamp.cpp CurrentThread.cpp Thread.cpp Logging.cpp LogStream.cpp EventLoop.cpp 10test_reactor01.cpp -o  10test_reactor01.out -lpthread
 	@#$(CLANG++) Timestamp.cpp CurrentThread.cpp Thread.cpp Logging.cpp LogStream.cpp Channel.cpp Poller.cpp EventLoop.cpp 11test_reactor02.cpp -o  11test_reactor02.out -lpthread
-	$(CLANG++) Timestamp.cpp CurrentThread.cpp Thread.cpp Logging.cpp LogStream.cpp Channel.cpp Poller.cpp EventLoop.cpp Timer.cpp TimerQueue.cpp 12test_reactor03.cpp -o  12test_reactor03.out -lpthread
+	@#$(CLANG++) Timestamp.cpp CurrentThread.cpp Thread.cpp Logging.cpp LogStream.cpp Channel.cpp Poller.cpp EventLoop.cpp Timer.cpp TimerQueue.cpp 12test_reactor03.cpp -o  12test_reactor03.out -lpthread
+	$(CLANG++) Timestamp.cpp CurrentThread.cpp Thread.cpp Logging.cpp LogStream.cpp Channel.cpp Poller.cpp EventLoop.cpp Timer.cpp TimerQueue.cpp 13test_reactor04.cpp -o  13test_reactor04.out -lpthread
 clean:
 	rm -fr *.o *.out
