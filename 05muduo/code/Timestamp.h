@@ -46,6 +46,16 @@ private:
     int64_t m_microseconds; // 微妙
 };
 
+inline bool operator<(Timestamp lhs, Timestamp rhs)
+{
+    return lhs.microSecondsSinceEpoch() < rhs.microSecondsSinceEpoch();
+}
+
+inline bool operator==(Timestamp lhs, Timestamp rhs)
+{
+    return lhs.microSecondsSinceEpoch() == rhs.microSecondsSinceEpoch();
+}
+
 // seconds
 inline double timeDifference(Timestamp heigh, Timestamp low)
 {

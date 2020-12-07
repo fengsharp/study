@@ -89,6 +89,7 @@ public:
         return m_pLoop;
     }
 
+    void remove();
 private:
     void update();
 

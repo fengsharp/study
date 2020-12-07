@@ -1,5 +1,7 @@
 #include "Channel.h"
 
+#include <assert.h>
+
 #include <sstream>
 
 #include <sys/epoll.h>
@@ -52,4 +54,12 @@ void Channel::handleEvent()
             m_writeCallback();
         }
     }
+}
+
+void Channel::remove()
+{
+    assert(isNoneEvent());
+
+    // m_bAddedToLoop = false;
+    // m_pLoop->removeChannel(this);
 }

@@ -72,7 +72,7 @@ void Poller::updateChannel(Channel * pChannel)
         pChannel->setPollerState(PollerState::ADDED);
         update(EPOLL_CTL_ADD, pChannel);
     }
-    else
+    else // added
     {
         int fd = pChannel->fd();
         (void)fd;
