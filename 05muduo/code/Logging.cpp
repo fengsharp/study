@@ -77,6 +77,7 @@ Logger::Impl::Impl(Logger::LogLevel level, int oldErrno, const SourceFile & file
     : m_time(Timestamp::now())
     , m_stream()
     , m_level(level)
+    , m_line(line)
     , m_basename(file)
 {
     formatTime();
