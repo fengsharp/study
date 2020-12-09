@@ -80,6 +80,13 @@ TimerQueue::~TimerQueue()
 TimerId TimerQueue::addTimer(const TimerCallback & cb, Timestamp when, double interval)
 {
     Timer * pTimer = new Timer(cb, when, interval);
+    m_pLoop->runInLoop(std::bind(&TimerQueue::addTimerInLoop, this, pTimer));
+
+    return TimerId(pTimer);
+}
+
+void TimerQueue::addTimerInLoop(Timer * pTimer)
+{
     m_pLoop->assertLoopInThisThread();
     bool earlistChaned = insert(pTimer);
 
@@ -87,7 +94,6 @@ TimerId TimerQueue::addTimer(const TimerCallback & cb, Timestamp when, double in
     {
         resetTimerfd(m_timerfd, pTimer->expiration());
     }
-    return TimerId(pTimer);
 }
 
 void TimerQueue::handleRead(Timestamp receiveTime)
@@ -107,7 +113,7 @@ void TimerQueue::handleRead(Timestamp receiveTime)
 std::vector<std::pair<Timestamp, Timer *>> TimerQueue::getExpired(Timestamp now)
 {
     std::vector<Entry> expired;
-    Entry sentry = std::make_pair(now, reinterpret_cast<Timer*>(UINTPTR_MAX));
+    Entry sentry = std::make_pair(now, reinterpret_cast<Timer *>(UINTPTR_MAX));
     TimerList::iterator it = m_timers.lower_bound(sentry);
     assert(it == m_timers.end() || now < it->first);
     std::copy(m_timers.begin(), it, std::back_inserter(expired));
