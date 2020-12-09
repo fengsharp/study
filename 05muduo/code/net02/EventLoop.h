@@ -4,12 +4,15 @@
 #include <memory>
 #include <vector>
 
+#include "Callbacks.h"
 #include "CurrentThread.h"
 #include "Noncopyable.h"
+#include "TimerId.h"
 #include "Timestamp.h"
 
 class Channel;
 class Poller;
+class TimerQueue;
 
 class EventLoop : private NonCopyable
 {
@@ -19,6 +22,10 @@ public:
 
     void loop();
     void quit();
+
+    TimerId runAt(const Timestamp & time, const TimerCallback & cb);
+    TimerId runAfter(double delay, const TimerCallback & cb);
+    TimerId runEvery(double inteterval, const TimerCallback & cb);
 
     bool hasChannel(Channel * pChannel);
     void removeChannel(Channel * pChannel);
@@ -31,7 +38,7 @@ public:
 
     void assertLoopInThisThread() const
     {
-        assert(isInLoopThread());
+        assert(isInLoopThread() == true);
     }
 
 private:
@@ -41,6 +48,7 @@ private:
     pid_t m_threadId;
     Timestamp m_pollReturnTime;
     std::unique_ptr<Poller> m_pPoller;
+    std::unique_ptr<TimerQueue> m_pTimerQueue;
 
     std::vector<Channel *> m_vecActiveChannels;
     Channel * m_pCurrentActiveChannel;

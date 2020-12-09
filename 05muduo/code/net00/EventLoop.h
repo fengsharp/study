@@ -20,7 +20,7 @@ public:
 
     void assertInLoopThread()
     {
-        if (!isInLoopThread())
+        if (isInLoopThread())
         {
             abortNotInLoopThread();
         }
