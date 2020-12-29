@@ -72,7 +72,7 @@ private:
     void threadWork()
     {
         m_latch.countDown();
-        
+
         while (true)
         {
             int num = m_blockQueue.take();
@@ -101,11 +101,12 @@ int main()
     Work work(10);
     work.run(NUM_STARTED, NUM_ENDED);
     work.joinAll();
-    // for (int i = NUM_STARTED; i <= NUM_ENDED; i++)
-    // {
-    //     if (isPrime(i))
-    //         printf("%d\n", i);
-    // }
+
+    if (CurrentThread::isMainThread())
+    {
+        printf("%s\n", CurrentThread::name());
+        puts("=== ok. ===");
+    }
 
     return 0;
 }

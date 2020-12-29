@@ -16,6 +16,17 @@ namespace CurrentThread
 __thread int t_cachedTid = 0;
 __thread const char * t_threadName = "Unknown";
 
+class InitMainThread
+{
+public:
+    InitMainThread()
+    {
+        cacheTid();
+        t_threadName = "main";
+    }
+};
+InitMainThread init;
+
 pid_t getTid()
 {
     return static_cast<pid_t>(::syscall(SYS_gettid));
