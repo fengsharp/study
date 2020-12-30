@@ -44,9 +44,9 @@ public:
     ~AppendFile();
     void append(const char * logline, size_t len);
     void flush();
-    off_t writenBytes() const
+    off_t writtenBytes() const
     {
-        return m_writenBytes;
+        return m_writtenBytes;
     }
 
 private:
@@ -57,7 +57,7 @@ private:
 
     FILE * m_fp;
     char m_buffer[kBufferSize];
-    off_t m_writenBytes;
+    off_t m_writtenBytes;
 };
 } // namespace FileUtil
 

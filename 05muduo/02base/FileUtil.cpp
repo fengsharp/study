@@ -121,7 +121,7 @@ template int ReadSmallFile::readToString(int maxSize, std::string * content, int
 AppendFile::AppendFile(StringArg filename)
 {
     m_fp = ::fopen(filename.data(), "ae");
-    m_writenBytes = 0;
+    m_writtenBytes = 0;
     assert(m_fp != NULL);
     ::setbuffer(m_fp, m_buffer, sizeof(m_buffer));
 }
@@ -151,7 +151,7 @@ void AppendFile::append(const char * logline, size_t len)
         remain = len - n;
     }
 
-    m_writenBytes += len;
+    m_writtenBytes += len;
 }
 
 void AppendFile::flush()
