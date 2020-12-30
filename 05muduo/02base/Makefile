@@ -8,7 +8,8 @@ all:
 	@#$(CLANG++) 04test_atomic.cpp -o 04test_atomic.out
 	@#$(CLANG++) Thread.cpp CurrentThread.cpp Timestamp.cpp 05test_blocking_queue.cpp -o 05test_blocking_queue.out -lpthread
 	@#$(CLANG++) Thread.cpp CurrentThread.cpp Timestamp.cpp 06test_singleton.cpp -o 06test_singleton.out -lpthread
-	$(CLANG++) ThreadPool.cpp Thread.cpp CurrentThread.cpp Timestamp.cpp 07test_thread_pool.cpp -o 07test_thread_pool.out -lpthread
+	@#$(CLANG++) ThreadPool.cpp Thread.cpp CurrentThread.cpp Timestamp.cpp 07test_thread_pool.cpp -o 07test_thread_pool.out -lpthread
+	$(CLANG++) CurrentThread.cpp Timestamp.cpp FileUtil.cpp Logging.cpp LogStream.cpp 08test_fileutil.cpp -o 08test_fileutil.out -lpthread
 
 clean:
 	rm -f ./*.out ./*.o
