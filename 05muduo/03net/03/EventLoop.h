@@ -7,7 +7,10 @@
 
 #include "NonCopyable.h"
 
+#include "Callbacks.h"
 #include "Poller.h"
+#include "TimerQueue.h"
+#include "TimerId.h"
 
 class Channel;
 
@@ -24,12 +27,16 @@ public:
 
     bool isInLoopThread();
     void assertInLoopThread();
+
+    TimerId runAt(const Timestamp & time, const TimerCallback & cb);
+    TimerId runAfter(double delay, const TimerCallback & cb);
+    TimerId runEvery(double interval, const TimerCallback & cb);
 private:
     bool m_bLooping;
     bool m_bQuit;
     const pid_t m_threadId;
     Poller m_poller;
-
+    TimerQueue m_timerQueue;
 };
 
 #endif

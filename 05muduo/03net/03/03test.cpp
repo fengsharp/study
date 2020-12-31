@@ -10,30 +10,26 @@
 
 EventLoop * g_pLoop;
 
-void timerCallback(Timestamp time)
+int g_cnt = 0;
+void timerCallback()
 {
-    puts("--- bebebe ---");
-    
-    g_pLoop->stop();
+    printf("--- bebebe --- %d\n", g_cnt);
+
+    ++g_cnt;
+    if (g_cnt > 5)
+    {
+        g_pLoop->stop();
+    }
 }
 
 int main()
 {
     EventLoop loop;
     g_pLoop = &loop;
-
-    int fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
-    assert(fd > 0);
-
-    Channel timerChannel(g_pLoop, fd);
-    timerChannel.enableReading();
-    timerChannel.setReadEventFunc(std::bind(&timerCallback, std::placeholders::_1));
-
-    struct itimerspec howlong;
-    memset(&howlong, 0, sizeof(howlong));
-    howlong.it_value.tv_sec = 2;
-    timerfd_settime(fd, 0, &howlong, NULL);
-
+    puts("start...");
+    loop.runAfter(3.0f, std::bind(&timerCallback));
+    loop.runAfter(1.0f, std::bind(&timerCallback));
+    loop.runEvery(2.0f, std::bind(&timerCallback));
     loop.loop();
 
     puts("=== ok. ===");

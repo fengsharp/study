@@ -2,8 +2,8 @@
 
 #include <assert.h>
 
-#include "CurrentThread.h"
 #include "Channel.h"
+#include "CurrentThread.h"
 
 __thread EventLoop * gt_pLoop = NULL;
 
@@ -12,6 +12,7 @@ EventLoop::EventLoop()
     , m_bQuit(false)
     , m_threadId(CurrentThread::tid())
     , m_poller(this)
+    , m_timerQueue(this)
 {
     if (gt_pLoop != NULL)
     {
@@ -72,4 +73,20 @@ void EventLoop::assertInLoopThread()
     {
         abort();
     }
+}
+
+TimerId EventLoop::runAt(const Timestamp & time, const TimerCallback & cb)
+{
+    return m_timerQueue.addTimer(cb, time, 0.0);
+}
+
+TimerId EventLoop::runAfter(double delay, const TimerCallback & cb)
+{
+    Timestamp time(addTime(Timestamp::now(), delay));
+    return runAt(time, cb);
+}
+
+TimerId EventLoop::runEvery(double interval, const TimerCallback & cb)
+{
+    return m_timerQueue.addTimer(cb, addTime(Timestamp::now(), interval), interval);
 }
