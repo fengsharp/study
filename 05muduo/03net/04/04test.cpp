@@ -8,33 +8,23 @@
 
 #include "Channel.h"
 #include "EventLoop.h"
+#include "EventLoopThread.h"
 #include "Timestamp.h"
 #include "Types.h"
-/*
-int timerfd_create(int clockid, int flags);
-int timerfd_settime(int fd, int flags,
-                           const struct itimerspec *new_value,
-                           struct itimerspec *old_value);
 
-*/
-
-EventLoop * g_loop = nullptr;
-int timerfd = 0;
-
-void timerCallback()
+void runInThread()
 {
-    puts("timerCallback");
-
-    g_loop->stop();
+    printf("runInThread pid=%d, tid=%d\n", getpid(), CurrentThread::tid());
 }
 
 int main()
 {
-    EventLoop pLoop;
-    g_loop = &pLoop;
-    pLoop.runAfter(2.0, std::bind(&timerCallback));
+    printf("main pid=%d, tid=%d\n", getpid(), CurrentThread::tid());
 
-    pLoop.loop();
+    EventLoopThread loopThread;
+    EventLoop * pLoop = loopThread.startLoop();
+    pLoop->runInLoop(std::bind(&runInThread));
+    pLoop->stop();
 
     puts("=== ok. ===");
 

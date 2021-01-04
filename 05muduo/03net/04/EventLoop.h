@@ -9,6 +9,7 @@
 #include "TimerQueue.h"
 #include "Timestamp.h"
 #include "TimerId.h"
+#include "PendingQueue.h"
 
 class Channel;
 
@@ -29,6 +30,8 @@ public:
     TimerId runAfter(double delay, const TimerCallback & cb);
     TimerId runEvery(double interval, const TimerCallback & cb);
 
+    void runInLoop(const PendingCallback & cb);
+    void queueInLoop(const PendingCallback & cb);
 private:
     bool m_bLooping;
     bool m_bQuit;
@@ -36,6 +39,7 @@ private:
 
     Poller m_poller;
     TimerQueue m_timerQueue;
+    PendingQueue m_pendingQueue;
 };
 
 #endif

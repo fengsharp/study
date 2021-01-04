@@ -7,5 +7,6 @@
 #include "Timestamp.h"
 
 typedef std::function<void()> TimerCallback;
+typedef std::function<void()> PendingCallback;
 
 #endif

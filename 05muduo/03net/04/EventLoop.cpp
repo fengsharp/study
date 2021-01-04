@@ -15,6 +15,7 @@ EventLoop::EventLoop()
     , m_threadId(CurrentThread::tid())
     , m_poller(this)
     , m_timerQueue(this)
+    , m_pendingQueue(this)
 {
     if (gt_pLoop != NULL)
     {
@@ -49,6 +50,8 @@ void EventLoop::loop()
         {
             item->handle(receiveTime);
         }
+
+        m_pendingQueue.callPendingFunctiors();
     }
 
     m_bLooping = false;
@@ -57,6 +60,10 @@ void EventLoop::loop()
 void EventLoop::stop()
 {
     m_bQuit = true;
+    if (!isLoopInThread())
+    {
+        m_pendingQueue.wakeup();
+    }
 }
 
 bool EventLoop::isLoopInThread()
@@ -74,6 +81,7 @@ void EventLoop::assertLoopInThread()
 
 void EventLoop::updateChannel(Channel * pChannel)
 {
+    assertLoopInThread();
     m_poller.updateChannel(pChannel);
 }
 
@@ -91,4 +99,21 @@ TimerId EventLoop::runAfter(double delay, const TimerCallback & cb)
 TimerId EventLoop::runEvery(double interval, const TimerCallback & cb)
 {
     return m_timerQueue.addTimer(cb, addTime(Timestamp::now(), interval), interval);
+}
+
+void EventLoop::runInLoop(const PendingCallback & cb)
+{
+    if (isLoopInThread())
+    {
+        cb();
+    }
+    else
+    {
+        queueInLoop(cb);
+    }
+}
+
+void EventLoop::queueInLoop(const PendingCallback & cb)
+{
+    m_pendingQueue.addCallback(cb);
 }
