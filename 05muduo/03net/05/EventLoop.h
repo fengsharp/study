@@ -10,7 +10,14 @@ class EventLoop
 public:
     EventLoop();
     ~EventLoop();
-    
+
+    void loop();
+    void stop();
+
+    bool isLoopInThread() const;
+    void assertLoopInThread();
+private:
+    void wakeup();
 private:
     bool m_bLooping;
     bool m_bQuit;
