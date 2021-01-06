@@ -14,7 +14,7 @@ int createTimerfd()
     return ret;
 }
 
-void setTimer(int timerfd, Timestamp when)
+void setTimerfd(int timerfd, Timestamp when)
 {
     int64_t microseconds = when.microSeconds() - Timestamp::now().microSeconds();
     if (microseconds < 100)
@@ -30,7 +30,7 @@ void setTimer(int timerfd, Timestamp when)
     assert(ret == 0);
 }
 
-void readTimer(int timerfd)
+void readTimerfd(int timerfd)
 {
     int64_t howmany = 0;
     ssize_t n = ::read(timerfd, &howmany, sizeof(howmany));
@@ -54,17 +54,68 @@ TimerQueue::~TimerQueue()
 void TimerQueue::addTimer(const TimerCallback & cb, Timestamp when, double interval)
 {
     m_pLoop->assertLoopInthread();
-    
-    m_delCallback = cb;
-    setTimer(m_timerfd, when);
+
+    bool earliesChanged = insert(cb, when, interval);
+    if (earliesChanged)
+    {
+        setTimerfd(m_timerfd, when);
+    }
 }
 
 void TimerQueue::handleRead(Timestamp received)
 {
-    readTimer(m_timerfd);
+    m_pLoop->assertLoopInthread();
+    readTimerfd(m_timerfd);
 
-    if (m_delCallback)
+    Timestamp now(Timestamp::now());
+    std::vector<TimerEntry> expiredTimers = getExpired(now);
+
+    for (auto & item : expiredTimers)
     {
-        m_delCallback();
+        item.second->run();
     }
+
+    for (auto & item : expiredTimers)
+    {
+        if (item.second->repeat())
+        {
+            item.second->restart(now);
+            m_setTimers.insert(std::make_pair(now, item.second));
+        }
+    }
+
+    if (m_setTimers.empty() == false)
+    {
+        setTimerfd(m_timerfd, m_setTimers.begin()->second->expiration());
+    }
+}
+
+bool TimerQueue::insert(const TimerCallback & cb, Timestamp when, double interval)
+{
+    bool earliesChanged = false;
+
+    std::set<TimerEntry>::const_iterator begin = m_setTimers.begin();
+    if (begin == m_setTimers.end() || when < begin->first)
+    {
+        earliesChanged = true;
+    }
+
+    m_setTimers.insert(std::make_pair(when, std::make_shared<Timer>(cb, when, interval)));
+
+    return earliesChanged;
+}
+
+std::vector<TimerQueue::TimerEntry> TimerQueue::getExpired(Timestamp now)
+{
+    assert(m_setTimers.empty() == false);
+    
+    std::vector<TimerEntry> vecRet;
+    std::set<TimerEntry>::iterator findItem = std::find_if(m_setTimers.begin(), m_setTimers.end(), [now](const std::set<TimerEntry>::value_type & item) {
+        return now < item.first;
+    });
+
+    std::copy(m_setTimers.begin(), findItem, std::back_inserter(vecRet));
+    m_setTimers.erase(m_setTimers.begin(), findItem);
+
+    return vecRet;
 }
