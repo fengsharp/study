@@ -2,7 +2,12 @@
 
 #include <assert.h>
 
+#include <vector>
+
 #include "CurrentThread.h"
+
+#include "Channel.h"
+#include "Poller.h"
 
 __thread EventLoop * gt_pLoop = NULL;
 
@@ -10,6 +15,7 @@ EventLoop::EventLoop()
     : m_bLooping(false)
     , m_bQuit(false)
     , m_threadId(CurrentThread::tid())
+    , m_poller(this)
 {
     assert(gt_pLoop == NULL);
     gt_pLoop = this;
@@ -27,10 +33,16 @@ void EventLoop::loop()
     assert(m_bLooping == false);
     m_bLooping = true;
 
+    std::vector<Channel *> vecActivityChannels;
+    Timestamp receivedTime;
     while (m_bQuit == false)
     {
-        CurrentThread::sleepUsec(1000);
-        puts("--- loop ---");
+        vecActivityChannels.clear();
+        receivedTime = m_poller.poll(-1, &vecActivityChannels);
+        for (auto & item : vecActivityChannels)
+        {
+            item->handleEvent(receivedTime);
+        }
     }
 
     m_bLooping = false;
@@ -56,4 +68,11 @@ void EventLoop::assertLoopInthread()
     {
         abort();
     }
+}
+
+void EventLoop::updateChannel(Channel * pChannel)
+{
+    assertLoopInthread();
+    assert(pChannel->ownerLoop() == this);
+    m_poller.updateChannel(pChannel);
 }
