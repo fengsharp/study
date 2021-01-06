@@ -3,8 +3,11 @@
 
 #include <pthread.h>
 
+#include "Callbacks.h"
 #include "NonCopyable.h"
 #include "Poller.h"
+#include "TimerQueue.h"
+#include "Timestamp.h"
 
 class Channel;
 
@@ -22,12 +25,17 @@ public:
 
     void updateChannel(Channel * pChannel);
 
+    void runAt(Timestamp when, const TimerCallback & cb);
+    void runAfter(double delay, const TimerCallback & cb);
+    void runEvery(double interval, const TimerCallback & cb);
+
 private:
     bool m_bLooping;
     bool m_bQuit;
     const pid_t m_threadId;
 
     Poller m_poller;
+    TimerQueue m_timer;
 };
 
 #endif

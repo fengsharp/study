@@ -16,6 +16,7 @@ EventLoop::EventLoop()
     , m_bQuit(false)
     , m_threadId(CurrentThread::tid())
     , m_poller(this)
+    , m_timer(this)
 {
     assert(gt_pLoop == NULL);
     gt_pLoop = this;
@@ -75,4 +76,20 @@ void EventLoop::updateChannel(Channel * pChannel)
     assertLoopInthread();
     assert(pChannel->ownerLoop() == this);
     m_poller.updateChannel(pChannel);
+}
+
+void EventLoop::runAt(Timestamp when, const TimerCallback & cb)
+{
+    m_timer.addTimer(cb, when, 0.0);
+}
+
+void EventLoop::runAfter(double delay, const TimerCallback & cb)
+{
+    Timestamp when(addTime(Timestamp::now(), delay));
+    runAt(when, cb);
+}
+
+void EventLoop::runEvery(double interval, const TimerCallback & cb)
+{
+    m_timer.addTimer(cb, addTime(Timestamp::now(), interval), interval);
 }
