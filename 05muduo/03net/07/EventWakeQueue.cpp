@@ -20,6 +20,8 @@ EventWakeQueue::EventWakeQueue(EventLoop * pLoop)
     , m_mutex()
     , m_bPending(false)
 {
+    m_eventChannel.setEventReadCallback(std::bind(&EventWakeQueue::handleRead, this, std::placeholders::_1));
+    m_eventChannel.enableReading();
 }
 
 EventWakeQueue::~EventWakeQueue()
