@@ -107,4 +107,17 @@ void fromHostPort(const char * ip, uint16_t port, struct sockaddr_in * addr)
     }
 }
 
+struct sockaddr_in getLocalAddr(int sockfd)
+{
+    struct sockaddr_in localaddr;
+    memZero(&localaddr, sizeof(localaddr));
+    socklen_t addrlen = sizeof(localaddr);
+    if (::getsockname(sockfd, sockaddr_cast(&localaddr), &addrlen) < 0)
+    {
+        perror("getsockname");
+        abort();
+    }
+    return localaddr;
+}
+
 } // namespace sockets
