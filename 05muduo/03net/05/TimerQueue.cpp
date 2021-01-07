@@ -53,6 +53,11 @@ TimerQueue::~TimerQueue()
 
 void TimerQueue::addTimer(const TimerCallback & cb, Timestamp when, double interval)
 {
+    m_pLoop->runInLoop(std::bind(&TimerQueue::addTimerInLoop, this, cb, when, interval));
+}
+
+void TimerQueue::addTimerInLoop(const TimerCallback & cb, Timestamp when, double interval)
+{
     m_pLoop->assertLoopInthread();
 
     bool earliesChanged = insert(cb, when, interval);
@@ -108,7 +113,7 @@ bool TimerQueue::insert(const TimerCallback & cb, Timestamp when, double interva
 std::vector<TimerQueue::TimerEntry> TimerQueue::getExpired(Timestamp now)
 {
     assert(m_setTimers.empty() == false);
-    
+
     std::vector<TimerEntry> vecRet;
     std::set<TimerEntry>::iterator findItem = std::find_if(m_setTimers.begin(), m_setTimers.end(), [now](const std::set<TimerEntry>::value_type & item) {
         return now < item.first;

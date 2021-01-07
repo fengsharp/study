@@ -8,6 +8,7 @@
 #include "Poller.h"
 #include "TimerQueue.h"
 #include "Timestamp.h"
+#include "EventWakeQueue.h"
 
 class Channel;
 
@@ -29,6 +30,8 @@ public:
     void runAfter(double delay, const TimerCallback & cb);
     void runEvery(double interval, const TimerCallback & cb);
 
+    void runInLoop(const LoopFunctor & cb);
+    void queueInLoop(const LoopFunctor & cb);
 private:
     bool m_bLooping;
     bool m_bQuit;
@@ -36,6 +39,7 @@ private:
 
     Poller m_poller;
     TimerQueue m_timer;
+    EventWakeQueue m_eventWake;
 };
 
 #endif

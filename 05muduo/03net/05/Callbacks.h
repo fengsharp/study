@@ -3,6 +3,8 @@
 
 #include <functional>
 
+typedef std::function<void()> LoopFunctor;
+
 typedef std::function<void()> TimerCallback;
 
 

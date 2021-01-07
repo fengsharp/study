@@ -65,6 +65,7 @@ public:
     void addTimer(const TimerCallback & cb, Timestamp when, double interval);
 
 private:
+    void addTimerInLoop(const TimerCallback & cb, Timestamp when, double interval);
     void handleRead(Timestamp received);
     bool insert(const TimerCallback & cb, Timestamp when, double interval);
     typedef std::pair<Timestamp, std::shared_ptr<Timer>> TimerEntry;

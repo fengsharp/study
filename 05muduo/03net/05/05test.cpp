@@ -28,15 +28,18 @@ void timerCallbak(const std::string & msg)
     }
 }
 
+void normalCallback(const std::string & msg)
+{
+    printf("--- !msg: %s, timer call back. --\n", msg.data());
+    g_pLoop->runEvery(1, std::bind(&timerCallbak, "runEvery"));
+}
+
 int main()
 {
     EventLoop loop;
     g_pLoop = &loop;
 
-    loop.runAfter(2, std::bind(&timerCallbak, "runAfter1"));
-    loop.runAfter(2, std::bind(&timerCallbak, "runAfter2"));
-    loop.runAfter(2, std::bind(&timerCallbak, "runAfter3"));
-    loop.runEvery(1, std::bind(&timerCallbak, "runEvery"));
+    loop.runAfter(3, std::bind(&normalCallback, "runAfter1"));
     loop.loop();
 
     puts("=== ok. ===");

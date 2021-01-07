@@ -17,6 +17,7 @@ EventLoop::EventLoop()
     , m_threadId(CurrentThread::tid())
     , m_poller(this)
     , m_timer(this)
+    , m_eventWake(this)
 {
     assert(gt_pLoop == NULL);
     gt_pLoop = this;
@@ -44,6 +45,8 @@ void EventLoop::loop()
         {
             item->handleEvent(receivedTime);
         }
+
+        m_eventWake.run();
     }
 
     m_bLooping = false;
@@ -54,7 +57,7 @@ void EventLoop::stop()
     m_bQuit = true;
     if (isLoopInThread() == false)
     {
-        // wakeup
+        m_eventWake.wakeup();
     }
 }
 
@@ -92,4 +95,21 @@ void EventLoop::runAfter(double delay, const TimerCallback & cb)
 void EventLoop::runEvery(double interval, const TimerCallback & cb)
 {
     m_timer.addTimer(cb, addTime(Timestamp::now(), interval), interval);
+}
+
+void EventLoop::runInLoop(const LoopFunctor & cb)
+{
+    if (isLoopInThread())
+    {
+        cb();
+    }
+    else
+    {
+        queueInLoop(cb);
+    }
+}
+
+void EventLoop::queueInLoop(const LoopFunctor & cb)
+{
+    m_eventWake.addPendingFunction(cb);
 }
